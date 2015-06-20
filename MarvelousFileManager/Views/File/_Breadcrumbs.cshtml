@@ -1,0 +1,28 @@
+﻿@using MarvelousFileManager.Helpers
+@model MarvelousFileManager.Models.PaneState
+
+@{
+    var pathElements = Model.Path.Split('/');
+    string currentPath = "";
+}
+
+
+<ol class="breadcrumb">
+    <li></li>
+    @if (pathElements.Length == 1)
+    {
+        <li class="active">root</li>
+    }
+    else
+    {
+        @Html.BreadcrumbFromPath("root", Model.Type, currentPath, Request.Params)
+
+        for (int i = 1; i < pathElements.Length - 1; i++)
+        {
+            currentPath += String.Format("/{0}", pathElements[i]);
+            @Html.BreadcrumbFromPath(pathElements[i], Model.Type, currentPath, Request.Params)
+        }
+        @* Last element is the active one and it is non-clickable *@
+        <li class="active">@pathElements[pathElements.Length - 1]</li>
+    }
+</ol>

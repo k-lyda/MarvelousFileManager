@@ -1,0 +1,91 @@
+﻿@using MarvelousFileManager.Models
+@{
+    var state = Model as ManagerState;
+}
+
+@if(ViewBag.Messages != null)
+{
+    foreach (var message in (List<Message>)ViewBag.Messages)
+    {
+        <div class="alert alert-@message.Type alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            @message.Text
+        </div>
+    }
+}
+<div id="contentContainer" class="container">
+    @using (Html.BeginForm())
+    {
+        @Html.Hidden("from")
+        @Html.Hidden("to")
+        @Html.Hidden("leftPath", state.LeftPane.Path)
+        @Html.Hidden("rightPath", state.RightPane.Path)
+        <div class="row row-eq-height" id="panesRow">
+            <div class="col-sm-6 well">
+                <div class="panel panel-default" id="leftPane">
+                    <div class="panel-heading">
+                        @Html.Partial("_Breadcrumbs", state.LeftPane)
+                    </div>
+                    <div class="panel-body">
+                        @Html.Partial("_PaneTree", state.LeftPane)
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 well">
+                <div class="panel panel-default" id="rightPane">
+                    <div class="panel-heading">
+                        @Html.Partial("_Breadcrumbs", state.RightPane)
+                    </div>
+                    <div class="panel-body">
+                        @Html.Partial("_PaneTree", state.RightPane)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" id="buttonsRow">
+            <div class="col-sm-12 text-center">
+                <div class="btn-group" role="group" aria-label="ButtonControls">
+                    <input class="btn btn-default" role="button" type="submit" name="Copy" value="[5] COPY" />
+                    <input class="btn btn-default" role="button" type="submit" name="Move" value="[6] MOVE" />
+                    <input class="btn btn-default" role="button" type="submit" name="Delete" value="[8] DELETE" />
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section scripts {
+    @Scripts.Render("~/Scripts/jquery.hotkeys.js")
+    <script>
+        $('input[type=checkbox]').on('click', function () {
+            var paneId = $(this).parents('.panel').attr('id');
+            if (paneId == 'leftPane') {
+                $('#leftPane').addClass('panel-info');
+                $('#rightPane').removeClass('panel-info');
+                $('#rightPane input[type=checkbox]').prop('checked', false);
+
+                $('input#from').val($.trim($('#leftPath').val()))
+                $('input#to').val($.trim($('#rightPath').val()))
+            }
+            else {
+                $('#rightPane').addClass('panel-info');
+                $('#leftPane').removeClass('panel-info');
+                $('#leftPane input[type=checkbox]').prop('checked', false);
+
+                $('input#from').val($.trim($('#rightPath').val()))
+                $('input#to').val($.trim($('#leftPath').val()))
+            }
+        });
+
+        jQuery.hotkeys.options.filterInputAcceptingElements = false;
+        $(document).bind('keydown', '5', function () {
+            $('input[name=Copy]').click();
+        });
+        $(document).bind('keydown', '6', function () {
+            $('input[name=Move]').click();
+        });
+        $(document).bind('keydown', '8', function () {
+            $('input[name=Delete]').click();
+        });
+    </script>
+}

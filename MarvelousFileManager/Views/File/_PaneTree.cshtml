@@ -1,0 +1,31 @@
+﻿@model MarvelousFileManager.Models.PaneState
+
+@foreach (var dir in Model.Dirs)
+{
+    <div class="checkbox pane-line">
+        <input type="checkbox" value="@dir.Name" name="files[]" />
+        <label>
+            <span class="glyphicon glyphicon-folder-close" aria-hidden="true"></span>
+            @switch (Model.Type)
+            {
+                case MarvelousFileManager.Models.PaneState.PaneType.Left:
+                    @Html.ActionLink(dir.Name, "Index", new { leftPath = String.Format("{0}/{1}", Model.Path, dir.Name), rightPath = Request.Params["rightPath"] })
+                    break;
+                case MarvelousFileManager.Models.PaneState.PaneType.Right:
+                    @Html.ActionLink(dir.Name, "Index", new { leftPath = Request.Params["leftPath"], rightPath = String.Format("{0}/{1}", Model.Path, dir.Name) })
+                    break;
+            }
+        </label>
+    </div>
+}
+
+@foreach (var file in Model.Files)
+{
+    <div class="checkbox pane-line">
+        <label>
+            <input type="checkbox" value="@file.Name" name="files[]" />
+            <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
+            @file.Name
+        </label>
+    </div>
+}
